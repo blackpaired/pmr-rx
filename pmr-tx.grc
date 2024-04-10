@@ -13,7 +13,7 @@ options:
     hier_block_src_path: '.:'
     id: default
     max_nouts: '0'
-    output_language: cpp
+    output_language: python
     placement: (0,0)
     qt_qss_theme: ''
     realtime_scheduling: ''
@@ -37,7 +37,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '48000'
+    value: '446006250'
   states:
     bus_sink: false
     bus_source: false
@@ -62,41 +62,37 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    audio_rate: freq
+    audio_rate: '48000'
     comment: ''
     fh: '-1.0'
-    max_dev: 5e3
+    max_dev: 1.5e3
     maxoutbuf: '0'
     minoutbuf: '0'
-    quad_rate: '2400000'
+    quad_rate: '480000'
     tau: 75e-6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 264.0]
+    coordinate: [632, 264.0]
     rotation: 0
     state: true
-- name: analog_sig_source_x_0
-  id: analog_sig_source_x
+- name: blocks_wavfile_source_0
+  id: blocks_wavfile_source
   parameters:
     affinity: ''
     alias: ''
-    amp: '1'
     comment: ''
-    freq: '1000'
+    file: radio.wav
     maxoutbuf: '0'
     minoutbuf: '0'
-    offset: '0'
-    phase: '0'
-    samp_rate: samp_rate
-    type: float
-    waveform: analog.GR_COS_WAVE
+    nchan: '1'
+    repeat: 'True'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [512, 256.0]
+    coordinate: [408, 288.0]
     rotation: 0
     state: true
 - name: iio_pluto_sink_0
@@ -112,10 +108,10 @@ blocks:
     filter: ''
     filter_source: '''Auto'''
     fpass: '0'
-    frequency: '2400000000'
+    frequency: freq
     fstop: '0'
     len_tag_key: ''
-    samplerate: samp_rate
+    samplerate: '480000'
     type: fc32
     uri: pluto.local
   states:
@@ -123,6 +119,30 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1184, 236.0]
+    rotation: 0
+    state: true
+- name: low_pass_filter_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: '200000'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: '480000'
+    type: fir_filter_ccf
+    width: '100000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [904, 244.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
@@ -203,14 +223,15 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 496.0]
+    coordinate: [1136, 488.0]
     rotation: 0
     state: true
 
 connections:
-- [analog_nbfm_tx_0, '0', iio_pluto_sink_0, '0']
-- [analog_nbfm_tx_0, '0', qtgui_freq_sink_x_0, '0']
-- [analog_sig_source_x_0, '0', analog_nbfm_tx_0, '0']
+- [analog_nbfm_tx_0, '0', low_pass_filter_0, '0']
+- [blocks_wavfile_source_0, '0', analog_nbfm_tx_0, '0']
+- [low_pass_filter_0, '0', iio_pluto_sink_0, '0']
+- [low_pass_filter_0, '0', qtgui_freq_sink_x_0, '0']
 
 metadata:
   file_format: 1
